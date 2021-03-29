@@ -34,15 +34,10 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     return [];
   });
 
-  useEffect(() => {
-        localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart));
-        console.log(cart)
-    }, [cart]); // Everytime [cart] changes set item at localStorage
-
   const addProduct = async (productId: number) => {
     try {
       // TODO
-      const stockResponse = await api.get(`stock/${productId}`);
+      // const stockResponse = await api.get(`stock/${productId}`);
       const productResponse = await api.get(`products/${productId}`);
 
       const productToAdd = productResponse.data
@@ -53,13 +48,14 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
           const updatedCart = cart;
           updatedCart[productOnCartIndex].amount += 1
-          setCart(updatedCart);
-
-          localStorage.setItem('@RocketShoes:cart', JSON.stringify(cart)); // For some reason I need to call setItem here to proper update the amount
+          setCart([...updatedCart]);
+          localStorage.setItem('@RocketShoes:cart', JSON.stringify(updatedCart)); 
           
         } else {
           productToAdd.amount = 1
           setCart([...cart, productToAdd])
+          const updatedCart = [...cart, productToAdd];
+          localStorage.setItem('@RocketShoes:cart', JSON.stringify(updatedCart));
         }
       } 
 
